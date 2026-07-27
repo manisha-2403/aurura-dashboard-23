@@ -15,7 +15,12 @@ import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedTransactionsRouteImport } from './routes/_authenticated/transactions'
+import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
+import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
+import { Route as AuthenticatedGoalsRouteImport } from './routes/_authenticated/goals'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedBudgetRouteImport } from './routes/_authenticated/budget'
+import { Route as AuthenticatedAnalyticsRouteImport } from './routes/_authenticated/analytics'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -47,9 +52,34 @@ const AuthenticatedTransactionsRoute =
     path: '/transactions',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedGoalsRoute = AuthenticatedGoalsRouteImport.update({
+  id: '/goals',
+  path: '/goals',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedBudgetRoute = AuthenticatedBudgetRouteImport.update({
+  id: '/budget',
+  path: '/budget',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAnalyticsRoute = AuthenticatedAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 
@@ -58,7 +88,12 @@ export interface FileRoutesByFullPath {
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/analytics': typeof AuthenticatedAnalyticsRoute
+  '/budget': typeof AuthenticatedBudgetRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/goals': typeof AuthenticatedGoalsRoute
+  '/profile': typeof AuthenticatedProfileRoute
+  '/settings': typeof AuthenticatedSettingsRoute
   '/transactions': typeof AuthenticatedTransactionsRoute
 }
 export interface FileRoutesByTo {
@@ -66,7 +101,12 @@ export interface FileRoutesByTo {
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/analytics': typeof AuthenticatedAnalyticsRoute
+  '/budget': typeof AuthenticatedBudgetRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/goals': typeof AuthenticatedGoalsRoute
+  '/profile': typeof AuthenticatedProfileRoute
+  '/settings': typeof AuthenticatedSettingsRoute
   '/transactions': typeof AuthenticatedTransactionsRoute
 }
 export interface FileRoutesById {
@@ -76,7 +116,12 @@ export interface FileRoutesById {
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/_authenticated/analytics': typeof AuthenticatedAnalyticsRoute
+  '/_authenticated/budget': typeof AuthenticatedBudgetRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/goals': typeof AuthenticatedGoalsRoute
+  '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/transactions': typeof AuthenticatedTransactionsRoute
 }
 export interface FileRouteTypes {
@@ -86,7 +131,12 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/login'
     | '/signup'
+    | '/analytics'
+    | '/budget'
     | '/dashboard'
+    | '/goals'
+    | '/profile'
+    | '/settings'
     | '/transactions'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -94,7 +144,12 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/login'
     | '/signup'
+    | '/analytics'
+    | '/budget'
     | '/dashboard'
+    | '/goals'
+    | '/profile'
+    | '/settings'
     | '/transactions'
   id:
     | '__root__'
@@ -103,7 +158,12 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/login'
     | '/signup'
+    | '/_authenticated/analytics'
+    | '/_authenticated/budget'
     | '/_authenticated/dashboard'
+    | '/_authenticated/goals'
+    | '/_authenticated/profile'
+    | '/_authenticated/settings'
     | '/_authenticated/transactions'
   fileRoutesById: FileRoutesById
 }
@@ -159,6 +219,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTransactionsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/settings': {
+      id: '/_authenticated/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AuthenticatedSettingsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/profile': {
+      id: '/_authenticated/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AuthenticatedProfileRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/goals': {
+      id: '/_authenticated/goals'
+      path: '/goals'
+      fullPath: '/goals'
+      preLoaderRoute: typeof AuthenticatedGoalsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -166,16 +247,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/budget': {
+      id: '/_authenticated/budget'
+      path: '/budget'
+      fullPath: '/budget'
+      preLoaderRoute: typeof AuthenticatedBudgetRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/analytics': {
+      id: '/_authenticated/analytics'
+      path: '/analytics'
+      fullPath: '/analytics'
+      preLoaderRoute: typeof AuthenticatedAnalyticsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAnalyticsRoute: typeof AuthenticatedAnalyticsRoute
+  AuthenticatedBudgetRoute: typeof AuthenticatedBudgetRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedGoalsRoute: typeof AuthenticatedGoalsRoute
+  AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
+  AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedTransactionsRoute: typeof AuthenticatedTransactionsRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAnalyticsRoute: AuthenticatedAnalyticsRoute,
+  AuthenticatedBudgetRoute: AuthenticatedBudgetRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedGoalsRoute: AuthenticatedGoalsRoute,
+  AuthenticatedProfileRoute: AuthenticatedProfileRoute,
+  AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedTransactionsRoute: AuthenticatedTransactionsRoute,
 }
 
