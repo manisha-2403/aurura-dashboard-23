@@ -37,6 +37,7 @@ export const NAV_ITEMS = [
   { to: "/budget", label: "Budget", icon: PiggyBank },
   { to: "/goals", label: "Goals", icon: Target },
   { to: "/analytics", label: "Analytics", icon: ChartNoAxesCombined },
+  { to: "/insights", label: "AI Insights", icon: Sparkles },
   { to: "/profile", label: "Profile", icon: User },
   { to: "/settings", label: "Settings", icon: Settings },
 ] as const;
