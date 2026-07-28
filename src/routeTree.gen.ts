@@ -14,9 +14,12 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiInsightsRouteImport } from './routes/api/insights'
+import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AuthenticatedTransactionsRouteImport } from './routes/_authenticated/transactions'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
+import { Route as AuthenticatedInsightsRouteImport } from './routes/_authenticated/insights'
 import { Route as AuthenticatedGoalsRouteImport } from './routes/_authenticated/goals'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedBudgetRouteImport } from './routes/_authenticated/budget'
@@ -46,6 +49,16 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiInsightsRoute = ApiInsightsRouteImport.update({
+  id: '/api/insights',
+  path: '/api/insights',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiChatRoute = ApiChatRouteImport.update({
+  id: '/api/chat',
+  path: '/api/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedTransactionsRoute =
   AuthenticatedTransactionsRouteImport.update({
     id: '/transactions',
@@ -60,6 +73,11 @@ const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
 const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedInsightsRoute = AuthenticatedInsightsRouteImport.update({
+  id: '/insights',
+  path: '/insights',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedGoalsRoute = AuthenticatedGoalsRouteImport.update({
@@ -92,9 +110,12 @@ export interface FileRoutesByFullPath {
   '/budget': typeof AuthenticatedBudgetRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/goals': typeof AuthenticatedGoalsRoute
+  '/insights': typeof AuthenticatedInsightsRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/transactions': typeof AuthenticatedTransactionsRoute
+  '/api/chat': typeof ApiChatRoute
+  '/api/insights': typeof ApiInsightsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -105,9 +126,12 @@ export interface FileRoutesByTo {
   '/budget': typeof AuthenticatedBudgetRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/goals': typeof AuthenticatedGoalsRoute
+  '/insights': typeof AuthenticatedInsightsRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/transactions': typeof AuthenticatedTransactionsRoute
+  '/api/chat': typeof ApiChatRoute
+  '/api/insights': typeof ApiInsightsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -120,9 +144,12 @@ export interface FileRoutesById {
   '/_authenticated/budget': typeof AuthenticatedBudgetRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/goals': typeof AuthenticatedGoalsRoute
+  '/_authenticated/insights': typeof AuthenticatedInsightsRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/transactions': typeof AuthenticatedTransactionsRoute
+  '/api/chat': typeof ApiChatRoute
+  '/api/insights': typeof ApiInsightsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -135,9 +162,12 @@ export interface FileRouteTypes {
     | '/budget'
     | '/dashboard'
     | '/goals'
+    | '/insights'
     | '/profile'
     | '/settings'
     | '/transactions'
+    | '/api/chat'
+    | '/api/insights'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -148,9 +178,12 @@ export interface FileRouteTypes {
     | '/budget'
     | '/dashboard'
     | '/goals'
+    | '/insights'
     | '/profile'
     | '/settings'
     | '/transactions'
+    | '/api/chat'
+    | '/api/insights'
   id:
     | '__root__'
     | '/'
@@ -162,9 +195,12 @@ export interface FileRouteTypes {
     | '/_authenticated/budget'
     | '/_authenticated/dashboard'
     | '/_authenticated/goals'
+    | '/_authenticated/insights'
     | '/_authenticated/profile'
     | '/_authenticated/settings'
     | '/_authenticated/transactions'
+    | '/api/chat'
+    | '/api/insights'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -173,6 +209,8 @@ export interface RootRouteChildren {
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   LoginRoute: typeof LoginRoute
   SignupRoute: typeof SignupRoute
+  ApiChatRoute: typeof ApiChatRoute
+  ApiInsightsRoute: typeof ApiInsightsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -212,6 +250,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/insights': {
+      id: '/api/insights'
+      path: '/api/insights'
+      fullPath: '/api/insights'
+      preLoaderRoute: typeof ApiInsightsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/chat': {
+      id: '/api/chat'
+      path: '/api/chat'
+      fullPath: '/api/chat'
+      preLoaderRoute: typeof ApiChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/transactions': {
       id: '/_authenticated/transactions'
       path: '/transactions'
@@ -231,6 +283,13 @@ declare module '@tanstack/react-router' {
       path: '/profile'
       fullPath: '/profile'
       preLoaderRoute: typeof AuthenticatedProfileRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/insights': {
+      id: '/_authenticated/insights'
+      path: '/insights'
+      fullPath: '/insights'
+      preLoaderRoute: typeof AuthenticatedInsightsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/goals': {
@@ -269,6 +328,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedBudgetRoute: typeof AuthenticatedBudgetRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedGoalsRoute: typeof AuthenticatedGoalsRoute
+  AuthenticatedInsightsRoute: typeof AuthenticatedInsightsRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedTransactionsRoute: typeof AuthenticatedTransactionsRoute
@@ -279,6 +339,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedBudgetRoute: AuthenticatedBudgetRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedGoalsRoute: AuthenticatedGoalsRoute,
+  AuthenticatedInsightsRoute: AuthenticatedInsightsRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedTransactionsRoute: AuthenticatedTransactionsRoute,
@@ -293,6 +354,8 @@ const rootRouteChildren: RootRouteChildren = {
   ForgotPasswordRoute: ForgotPasswordRoute,
   LoginRoute: LoginRoute,
   SignupRoute: SignupRoute,
+  ApiChatRoute: ApiChatRoute,
+  ApiInsightsRoute: ApiInsightsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
