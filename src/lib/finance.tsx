@@ -1,19 +1,16 @@
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import {
-  addDoc,
-  collection,
-  deleteDoc,
-  doc,
-  onSnapshot,
-  orderBy,
-  query,
-  setDoc,
-  updateDoc,
-} from "firebase/firestore";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
-import { getDb } from "./firebase";
+import { supabase } from "@/integrations/supabase/client";
+import type { TablesInsert, TablesUpdate } from "@/integrations/supabase/types";
 import { useAuth } from "./auth";
-import { DEFAULT_SETTINGS, type Goal, type Transaction, type UserSettings } from "./types";
+import {
+  DEFAULT_SETTINGS,
+  type CategoryId,
+  type Goal,
+  type Transaction,
+  type TransactionType,
+  type UserSettings,
+} from "./types";
 
 type FinanceContextValue = {
   transactions: Transaction[];
@@ -31,16 +28,60 @@ type FinanceContextValue = {
 
 const FinanceContext = createContext<FinanceContextValue | null>(null);
 
+type TxRow = {
+  id: string;
+  type: string;
+  amount: number | string;
+  category: string;
+  date: string;
+  note: string | null;
+  created_at: string;
+};
+
+type GoalRow = {
+  id: string;
+  title: string;
+  target: number | string;
+  saved: number | string;
+  deadline: string | null;
+  created_at: string;
+};
+
+const num = (v: number | string | null | undefined) => Number(v ?? 0);
+
+function mapTx(row: TxRow): Transaction {
+  return {
+    id: row.id,
+    type: row.type as TransactionType,
+    amount: num(row.amount),
+    category: row.category as CategoryId,
+    date: row.date,
+    note: row.note ?? "",
+    createdAt: new Date(row.created_at).getTime(),
+  };
+}
+
+function mapGoal(row: GoalRow): Goal {
+  return {
+    id: row.id,
+    title: row.title,
+    target: num(row.target),
+    saved: num(row.saved),
+    deadline: row.deadline ?? "",
+    createdAt: new Date(row.created_at).getTime(),
+  };
+}
+
 export function FinanceProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
+  const uid = user?.uid;
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [goals, setGoals] = useState<Goal[]>([]);
   const [settings, setSettings] = useState<UserSettings>(DEFAULT_SETTINGS);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const db = getDb();
-    if (!db || !user) {
+  const refresh = useCallback(async () => {
+    if (!uid) {
       setTransactions([]);
       setGoals([]);
       setSettings(DEFAULT_SETTINGS);
@@ -48,58 +89,42 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
       return;
     }
     setLoading(true);
-    let pending = 3;
-    const done = () => {
-      pending -= 1;
-      if (pending <= 0) setLoading(false);
-    };
+    const [tx, gl, pr] = await Promise.all([
+      supabase.from("transactions").select("*").order("date", { ascending: false }),
+      supabase.from("goals").select("*").order("created_at", { ascending: false }),
+      supabase.from("profiles").select("*").eq("id", uid).maybeSingle(),
+    ]);
 
-    const unsubTx = onSnapshot(
-      query(collection(db, "users", user.uid, "transactions"), orderBy("date", "desc")),
-      (snap) => {
-        setTransactions(snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Transaction));
-        done();
-      },
-      () => done(),
-    );
+    setTransactions(((tx.data ?? []) as TxRow[]).map(mapTx));
+    setGoals(((gl.data ?? []) as GoalRow[]).map(mapGoal));
 
-    const unsubGoals = onSnapshot(
-      collection(db, "users", user.uid, "goals"),
-      (snap) => {
-        setGoals(snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Goal));
-        done();
-      },
-      () => done(),
-    );
+    const p = pr.data as Record<string, unknown> | null;
+    setSettings({
+      ...DEFAULT_SETTINGS,
+      displayName: (p?.display_name as string) || user?.displayName || "",
+      photoURL: (p?.photo_url as string) || user?.photoURL || "",
+      bio: (p?.bio as string) ?? "",
+      phone: (p?.phone as string) ?? "",
+      currency: (p?.currency as string) || DEFAULT_SETTINGS.currency,
+      monthlyBudget: num(p?.monthly_budget as number | undefined),
+      categoryBudgets:
+        (p?.category_budgets as UserSettings["categoryBudgets"]) ?? DEFAULT_SETTINGS.categoryBudgets,
+      monthlyReminder: (p?.monthly_reminder as boolean) ?? true,
+    });
+    setLoading(false);
+  }, [uid, user?.displayName, user?.photoURL]);
 
-    const unsubSettings = onSnapshot(
-      doc(db, "users", user.uid),
-      (snap) => {
-        const data = (snap.data() ?? {}) as Partial<UserSettings>;
-        setSettings({
-          ...DEFAULT_SETTINGS,
-          displayName: user.displayName ?? "",
-          photoURL: user.photoURL ?? "",
-          ...data,
-        });
-        done();
-      },
-      () => done(),
-    );
-
-    return () => {
-      unsubTx();
-      unsubGoals();
-      unsubSettings();
-    };
-  }, [user]);
+  useEffect(() => {
+    void refresh();
+  }, [refresh]);
 
   const value = useMemo<FinanceContextValue>(() => {
-    const uid = user?.uid;
-    const requireDb = () => {
-      const db = getDb();
-      if (!db || !uid) throw new Error("You need to be signed in to do that.");
-      return { db, uid };
+    const requireUser = () => {
+      if (!uid) throw new Error("You need to be signed in to do that.");
+      return uid;
+    };
+    const check = (error: { message: string } | null) => {
+      if (error) throw new Error(error.message);
     };
 
     return {
@@ -108,39 +133,82 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
       settings,
       loading,
       async addTransaction(t) {
-        const { db, uid } = requireDb();
-        await addDoc(collection(db, "users", uid, "transactions"), {
-          ...t,
-          createdAt: Date.now(),
+        const id = requireUser();
+        const { error } = await supabase.from("transactions").insert({
+          user_id: id,
+          type: t.type,
+          amount: t.amount,
+          category: t.category,
+          date: t.date,
+          note: t.note ?? "",
         });
+        check(error);
+        await refresh();
       },
-      async updateTransaction(id, t) {
-        const { db, uid } = requireDb();
-        await updateDoc(doc(db, "users", uid, "transactions", id), t);
+      async updateTransaction(txId, t) {
+        requireUser();
+        const patch: TablesUpdate<"transactions"> = {};
+        if (t.type !== undefined) patch.type = t.type;
+        if (t.amount !== undefined) patch.amount = t.amount;
+        if (t.category !== undefined) patch.category = t.category;
+        if (t.date !== undefined) patch.date = t.date;
+        if (t.note !== undefined) patch.note = t.note;
+        const { error } = await supabase.from("transactions").update(patch).eq("id", txId);
+        check(error);
+        await refresh();
       },
-      async deleteTransaction(id) {
-        const { db, uid } = requireDb();
-        await deleteDoc(doc(db, "users", uid, "transactions", id));
+      async deleteTransaction(txId) {
+        requireUser();
+        const { error } = await supabase.from("transactions").delete().eq("id", txId);
+        check(error);
+        await refresh();
       },
       async addGoal(g) {
-        const { db, uid } = requireDb();
-        await addDoc(collection(db, "users", uid, "goals"), { ...g, createdAt: Date.now() });
+        const id = requireUser();
+        const { error } = await supabase.from("goals").insert({
+          user_id: id,
+          title: g.title,
+          target: g.target,
+          saved: g.saved,
+          deadline: g.deadline || null,
+        });
+        check(error);
+        await refresh();
       },
-      async updateGoal(id, g) {
-        const { db, uid } = requireDb();
-        await updateDoc(doc(db, "users", uid, "goals", id), g);
+      async updateGoal(goalId, g) {
+        requireUser();
+        const patch: TablesUpdate<"goals"> = {};
+        if (g.title !== undefined) patch.title = g.title;
+        if (g.target !== undefined) patch.target = g.target;
+        if (g.saved !== undefined) patch.saved = g.saved;
+        if (g.deadline !== undefined) patch.deadline = g.deadline || null;
+        const { error } = await supabase.from("goals").update(patch).eq("id", goalId);
+        check(error);
+        await refresh();
       },
-      async deleteGoal(id) {
-        const { db, uid } = requireDb();
-        await deleteDoc(doc(db, "users", uid, "goals", id));
+      async deleteGoal(goalId) {
+        requireUser();
+        const { error } = await supabase.from("goals").delete().eq("id", goalId);
+        check(error);
+        await refresh();
       },
       async saveSettings(s) {
-        const { db, uid } = requireDb();
+        const id = requireUser();
         setSettings((prev) => ({ ...prev, ...s }));
-        await setDoc(doc(db, "users", uid), s, { merge: true });
+        const patch: TablesInsert<"profiles"> = { id };
+        if (s.displayName !== undefined) patch.display_name = s.displayName;
+        if (s.photoURL !== undefined) patch.photo_url = s.photoURL;
+        if (s.bio !== undefined) patch.bio = s.bio;
+        if (s.phone !== undefined) patch.phone = s.phone;
+        if (s.currency !== undefined) patch.currency = s.currency;
+        if (s.monthlyBudget !== undefined) patch.monthly_budget = s.monthlyBudget;
+        if (s.categoryBudgets !== undefined) patch.category_budgets = s.categoryBudgets;
+        if (s.monthlyReminder !== undefined) patch.monthly_reminder = s.monthlyReminder;
+        const { error } = await supabase.from("profiles").upsert(patch, { onConflict: "id" });
+        check(error);
       },
     };
-  }, [transactions, goals, settings, loading, user]);
+  }, [transactions, goals, settings, loading, uid, refresh]);
 
   return <FinanceContext.Provider value={value}>{children}</FinanceContext.Provider>;
 }
