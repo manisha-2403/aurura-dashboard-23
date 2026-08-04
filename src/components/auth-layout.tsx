@@ -3,7 +3,6 @@ import { Link } from "@tanstack/react-router";
 import { Sparkles, ShieldCheck, TrendingUp, PieChart } from "lucide-react";
 
 import { ThemeToggle } from "@/components/theme-toggle";
-import { isFirebaseConfigured } from "@/lib/firebase";
 
 export function AuthLayout({
   title,
@@ -70,13 +69,6 @@ export function AuthLayout({
           <div className="glass-panel rounded-3xl p-7 sm:p-9">
             <h1 className="font-display text-2xl font-bold">{title}</h1>
             <p className="mt-1.5 text-sm text-muted-foreground">{subtitle}</p>
-
-            {!isFirebaseConfigured && (
-              <div className="mt-5 rounded-xl border border-warning/40 bg-warning/10 p-3 text-xs text-foreground">
-                <strong className="font-semibold">Firebase not connected yet.</strong> Add your
-                Firebase web config in <code>src/lib/firebase-config.ts</code> to enable sign in.
-              </div>
-            )}
 
             <div className="mt-6">{children}</div>
           </div>
