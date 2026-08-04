@@ -14,7 +14,141 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      goals: {
+        Row: {
+          created_at: string
+          deadline: string | null
+          id: string
+          saved: number
+          target: number
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          deadline?: string | null
+          id?: string
+          saved?: number
+          target?: number
+          title: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          deadline?: string | null
+          id?: string
+          saved?: number
+          target?: number
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          read: boolean
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message?: string
+          read?: boolean
+          title: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          read?: boolean
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          bio: string
+          category_budgets: Json
+          created_at: string
+          currency: string
+          display_name: string
+          email: string | null
+          id: string
+          monthly_budget: number
+          monthly_reminder: boolean
+          phone: string
+          photo_url: string
+          updated_at: string
+        }
+        Insert: {
+          bio?: string
+          category_budgets?: Json
+          created_at?: string
+          currency?: string
+          display_name?: string
+          email?: string | null
+          id: string
+          monthly_budget?: number
+          monthly_reminder?: boolean
+          phone?: string
+          photo_url?: string
+          updated_at?: string
+        }
+        Update: {
+          bio?: string
+          category_budgets?: Json
+          created_at?: string
+          currency?: string
+          display_name?: string
+          email?: string | null
+          id?: string
+          monthly_budget?: number
+          monthly_reminder?: boolean
+          phone?: string
+          photo_url?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      transactions: {
+        Row: {
+          amount: number
+          category: string
+          created_at: string
+          date: string
+          id: string
+          note: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          category: string
+          created_at?: string
+          date?: string
+          id?: string
+          note?: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          category?: string
+          created_at?: string
+          date?: string
+          id?: string
+          note?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
