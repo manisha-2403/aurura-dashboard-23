@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
 import { supabase } from "@/integrations/supabase/client";
+import type { TablesInsert, TablesUpdate } from "@/integrations/supabase/types";
 import { useAuth } from "./auth";
 import {
   DEFAULT_SETTINGS,
@@ -146,7 +147,7 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
       },
       async updateTransaction(txId, t) {
         requireUser();
-        const patch: Record<string, unknown> = {};
+        const patch: TablesUpdate<"transactions"> = {};
         if (t.type !== undefined) patch.type = t.type;
         if (t.amount !== undefined) patch.amount = t.amount;
         if (t.category !== undefined) patch.category = t.category;
@@ -176,7 +177,7 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
       },
       async updateGoal(goalId, g) {
         requireUser();
-        const patch: Record<string, unknown> = {};
+        const patch: TablesUpdate<"goals"> = {};
         if (g.title !== undefined) patch.title = g.title;
         if (g.target !== undefined) patch.target = g.target;
         if (g.saved !== undefined) patch.saved = g.saved;
@@ -194,7 +195,7 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
       async saveSettings(s) {
         const id = requireUser();
         setSettings((prev) => ({ ...prev, ...s }));
-        const patch: Record<string, unknown> = { id };
+        const patch: TablesInsert<"profiles"> = { id };
         if (s.displayName !== undefined) patch.display_name = s.displayName;
         if (s.photoURL !== undefined) patch.photo_url = s.photoURL;
         if (s.bio !== undefined) patch.bio = s.bio;
