@@ -180,15 +180,32 @@ This project was built with [Lovable](https://lovable.dev).
 
 ## Build with Lovable
 
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/7b145d03-6332-45f0-8949-2a0136768ac2).
+Continue developing this project in the [Lovable editor]# Personal Finance Dashboard
 
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
+A full-stack personal finance management website developed to help users track income, expenses, and financial insights.
 
-## Development
+## My Contribution
 
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+- Designed the user interface
+- Developed dashboard components
+- Implemented transaction management
+- Created analytics visualization
+- Integrated frontend and backend functionality
+- Tested and improved application performance
+
+## Technologies Used
+
+Frontend:
+- React
+- TypeScript
+- Tailwind CSS
+
+Backend:
+- Python
+- FastAPI
+
+Database:
+- Firebase(https://github.com/nvm-sh/nvm#installing-and-updating).
 
 ```sh
 git clone <this-repository-url>
