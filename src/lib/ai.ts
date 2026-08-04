@@ -1,3 +1,5 @@
+import { supabase } from "@/integrations/supabase/client";
+
 import type { Stats } from "./analytics";
 import {
   averageDailySpending,
@@ -57,10 +59,19 @@ export function buildSnapshot(
   };
 }
 
+async function authHeaders(): Promise<Record<string, string>> {
+  const { data } = await supabase.auth.getSession();
+  const token = data.session?.access_token;
+  return {
+    "content-type": "application/json",
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
+}
+
 export async function fetchInsights(snapshot: FinanceSnapshot): Promise<AiInsights> {
   const res = await fetch("/api/insights", {
     method: "POST",
-    headers: { "content-type": "application/json" },
+    headers: await authHeaders(),
     body: JSON.stringify(snapshot),
   });
   const data = (await res.json().catch(() => null)) as (AiInsights & { error?: string }) | null;
@@ -79,7 +90,7 @@ export async function streamChat(
 ) {
   const res = await fetch("/api/chat", {
     method: "POST",
-    headers: { "content-type": "application/json" },
+    headers: await authHeaders(),
     body: JSON.stringify({ messages, context }),
     signal,
   });

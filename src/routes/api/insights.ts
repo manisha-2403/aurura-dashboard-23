@@ -1,5 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 
+import { requireUser } from "@/lib/api-auth.server";
+
+
 export type AiInsights = {
   summary: string;
   healthVerdict: string;
@@ -33,6 +36,9 @@ export const Route = createFileRoute("/api/insights")({
   server: {
     handlers: {
       POST: async ({ request }) => {
+        const userId = await requireUser(request);
+        if (!userId) return json({ error: "Unauthorized" }, 401);
+
         const key = process.env.LOVABLE_API_KEY;
         if (!key) return json({ error: "AI is not configured." }, 500);
 
@@ -42,6 +48,11 @@ export const Route = createFileRoute("/api/insights")({
         } catch {
           return json({ error: "Invalid request body." }, 400);
         }
+        const serialized = JSON.stringify(payload ?? {});
+        if (typeof payload !== "object" || payload === null || serialized.length > 20000) {
+          return json({ error: "Invalid request body." }, 400);
+        }
+
 
         const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
           method: "POST",
