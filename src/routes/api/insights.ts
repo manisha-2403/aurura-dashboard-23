@@ -1,5 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 
+import { requireUser } from "@/lib/api-auth.server";
+
+
 export type AiInsights = {
   summary: string;
   healthVerdict: string;
