@@ -54,7 +54,7 @@ User's anonymised financial snapshot: ${JSON.stringify(body.context ?? {})}`;
             stream: true,
             messages: [
               { role: "system", content: system },
-              ...body.messages.slice(-16).map((m) => ({ role: m.role, content: m.content })),
+              ...messages.slice(-16).map((m) => ({ role: m.role, content: m.content })),
             ],
           }),
         });
