@@ -1,178 +1,63 @@
-# My Finance Hub
+# Personal Finance Dashboard
 
-Build a modern, responsive Personal Finance Dashboard web application.
+A modern web application that helps users manage income, expenses, and financial analytics through an interactive dashboard.
 
-Requirements:
+## Features
 
-- Use React + Vite
+- User authentication
+- Add income and expenses
+- View transaction history
+- Expense categorization
+- Dashboard analytics
+- Responsive design
+- Data visualization
 
+## Tech Stack
+
+Frontend:
+- React
+- TypeScript
 - Tailwind CSS
+- Vite
 
-- Charts using Recharts
+Backend / Services:
+- Supabase
+- PostgreSQL Database
 
-- Firebase Authentication
+Tools:
+- Git
+- GitHub
 
-- Firebase Firestore Database
+## Project Structure
 
-- Responsive Design
+src/
+ ├── components
+ ├── hooks
+ ├── routes
+ ├── lib
+ └── pages
 
-- Dark and Light Mode
+## Installation
 
-- Professional UI with glassmorphism
+Clone repository:
 
-- Mobile Friendly
+git clone your-repository-link
 
-Features:
+Install dependencies:
 
-Dashboard
+npm install
 
-- Welcome card
+Run project:
 
-- Current Balance
+npm run dev
 
-- Total Income
 
-- Total Expenses
+## Developer
 
-- Savings
+Developed by Serena
 
-- Monthly Budget Progress
-
-- Financial Health Score
-
-Transactions
-
-- Add transaction
-
-- Edit transaction
-
-- Delete transaction
-
-- Search transaction
-
-- Filter by category
-
-- Filter by date
-
-- Filter by income/expense
-
-Categories
-
-- Food
-
-- Shopping
-
-- Transport
-
-- Bills
-
-- Entertainment
-
-- Health
-
-- Education
-
-- Salary
-
-- Freelance
-
-- Investments
-
-- Others
-
-Charts
-
-- Monthly Expense Chart
-
-- Monthly Income Chart
-
-- Expense by Category Pie Chart
-
-- Savings Trend
-
-- Income vs Expense Bar Chart
-
-Budget Planner
-
-- Set monthly budget
-
-- Budget progress
-
-- Remaining budget
-
-- Budget alerts
-
-Goals
-
-- Add savings goal
-
-- Progress indicator
-
-- Deadline
-
-- Amount saved
-
-Analytics
-
-- Highest expense category
-
-- Average daily spending
-
-- Monthly comparison
-
-- Weekly comparison
-
-- Yearly report
-
-Profile
-
-- User profile
-
-- Upload profile picture
-
-- Edit details
-
-Settings
-
-- Dark mode
-
-- Currency selection
-
-- Export data to PDF
-
-- Export CSV
-
-Notifications
-
-- Budget exceeded
-
-- Goal achieved
-
-- Monthly reminder
-
-Landing Page
-
-- Hero section
-
-- Features
-
-- Screenshots
-
-- Testimonials
-
-- FAQ
-
-- Contact section
-
-Login
-
-- Login
-
-- Signup
-
-- Forgot Password
-
-Use modern cards, smooth animations, gradients, hover effects, rounded corners, shadows, icons, loading animations, skeleton loaders and responsive layouts.
+BCA Student
+Interested in AI and Web Developmentcorners, shadows, icons, loading animations, skeleton loaders and responsive layouts.
 
 Make the website production-ready.
 
